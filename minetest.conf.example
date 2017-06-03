@@ -239,7 +239,7 @@
 #    Key to use view zoom when possible.
 #    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
 #    type: key
-# keymap_zoom = KEY_KEY_Z
+keymap_zoom = KEY_KEY_Z
 
 #    Key for toggling the display of the HUD.
 #    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
@@ -578,7 +578,7 @@ max_out_chat_queue_size = 20
 #    Field of view while zooming in degrees.
 #    This requires the "zoom" privilege on the server.
 #    type: int min: 7 max: 160
-# zoom_fov = 15
+zoom_fov = 15
 
 #    Adjust the gamma encoding for the light tables. Higher numbers are brighter.
 #    This setting is for the client only and is ignored by the server.
@@ -930,6 +930,7 @@ max_out_chat_queue_size = 20
 #    This will be overridden when creating a world from the main menu.
 #    type: string
 # default_game = minetest
+default_game = minimal
 
 #    Message of the day displayed to players connecting.
 #    type: string
@@ -1844,3 +1845,4 @@ max_out_chat_queue_size = 20
 #    Print the engine's profiling data in regular intervals (in seconds). 0 = disable. Useful for developers.
 #    type: int
 # profiler_print_interval = 0
+menu_last_game = minimal

@@ -195,6 +195,7 @@ endif()
 find_package(GMP REQUIRED)
 find_package(Json REQUIRED)
 find_package(Lua REQUIRED)
+find_package(HIREDIS REQUIRED)
 
 # Subdirectories
 # Be sure to add all relevant definitions above this

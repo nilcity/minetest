@@ -24,7 +24,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #if USE_REDIS
 
-#include <hiredis.h>
+#include "hiredis/hiredis.h"
 #include <string>
 #include "database.h"
 

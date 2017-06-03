@@ -1,12 +1,9 @@
 #include "config.h"
 
-#if USE_REDIS
-
 #include "settings.h"
 #include "log.h"
 #include "exceptions.h"
 #include "util/string.h"
-#include <hiredis.h>
 #include <cassert>
 
 #include "lua_api/l_database.h"
@@ -605,6 +602,7 @@ extern "C" {
 
 LUALIB_API int luaopen_hiredis(lua_State * L)
 {
+
   /*
   * Register module
   */
@@ -670,5 +668,3 @@ LUALIB_API int luaopen_hiredis(lua_State * L)
 void ModApiDataBase::Initialize(lua_State *L, int top) {
     luaopen_hiredis(L);
 }
-
-#endif

@@ -28,7 +28,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "exceptions.h"
 #include "util/string.h"
 
-#include <hiredis.h>
+#include "hiredis/hiredis.h"
 #include <cassert>
 
 

@@ -1,7 +1,7 @@
 #ifndef L_DATABASE_H_
 #define L_DATABASE_H_
 
-#include <hiredis.h>
+#include "hiredis/hiredis.h"
 #include "lua_api/l_base.h"
 
 class ModApiDataBase : public ModApiBase {
