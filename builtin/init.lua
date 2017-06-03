@@ -52,3 +52,19 @@ elseif INIT == "client" then
 else
 	error(("Unrecognized builtin initialization type %s!"):format(tostring(INIT)))
 end
+
+
+--- just test
+
+print(hiredis)
+local conn = hiredis.connect('localhost', 8808);
+print(conn:command("PING"))
+print(conn:command("SET", "NAME", "lua-hiredis"));
+print(conn:command("GET", "NAME"));
+
+print('scriptpath', scriptpath)
+print('commonpath', commonpath)
+print('gamepath', gamepath)
+
+
+
