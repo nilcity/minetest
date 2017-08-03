@@ -56,11 +56,14 @@ end
 
 --- just test
 
-print(hiredis)
-local conn = hiredis.connect('localhost', 8808);
-print(conn:command("PING"))
-print(conn:command("SET", "NAME", "lua-hiredis"));
-print(conn:command("GET", "NAME"));
+if hiredis then
+    print(hiredis)
+    local conn = hiredis.connect('localhost', 8808);
+    print(conn:command("AUTH", "root"));
+    print(conn:command("PING"));
+    print(conn:command("SET", "NAME", "lua-hiredis"));
+    print(conn:command("GET", "NAME"));
+end
 
 print('scriptpath', scriptpath)
 print('commonpath', commonpath)
