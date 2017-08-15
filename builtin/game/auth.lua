@@ -75,11 +75,12 @@ core.builtin_auth_handler = {
 		core.log('info', "Built-in authentication handler adding player '"..name.."'")
 
 		local default_data = {
+            name = name,
 			password = password,
-			privileges = core.string_to_privs(core.settings:get("default_privs")),
+			privileges = core.settings:get("default_privs"),
 			last_login = os.time(),
 		}
-        db.user.insert(name, default_data)
+        db.user.insert(default_data)
 	end,
 	set_password = function(name, password)
 		assert(type(name) == "string")
@@ -153,11 +154,14 @@ core.register_on_joinplayer(function(player)
 end)
 
 core.register_on_prejoinplayer(function(name, ip)
+    print(name .. '|' .. ip);
     -- check it in redis
     local auth_user = db.user.find(name)
 
 	if auth_user ~= nil then
-		return
+		return auth_user
+    else 
+        return nil
 	end
 
     -- don't check name is lower case, if u know what u want
@@ -165,6 +169,6 @@ core.register_on_prejoinplayer(function(name, ip)
 		return string.format("\nCannot create new player called '%s'. "..
 				"Another account called '%s' is already registered. "..
 				"Please check the spelling if it's your account "..
-				"or use a different nickname.", name, k)
+				"or use a different nickname.", name, name)
 	end
 end)
