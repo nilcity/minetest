@@ -17,9 +17,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#ifndef SERVEROBJECT_HEADER
-#define SERVEROBJECT_HEADER
+#pragma once
 
+#include <unordered_set>
 #include "irrlichttypes_bloated.h"
 #include "activeobject.h"
 #include "inventorymanager.h"
@@ -55,7 +55,7 @@ public:
 		Prototypes are used that way.
 	*/
 	ServerActiveObject(ServerEnvironment *env, v3f pos);
-	virtual ~ServerActiveObject();
+	virtual ~ServerActiveObject() = default;
 
 	virtual ActiveObjectType getSendType() const
 	{ return getType(); }
@@ -77,7 +77,7 @@ public:
 	/*
 		Some simple getters/setters
 	*/
-	v3f getBasePosition(){ return m_base_position; }
+	v3f getBasePosition() const { return m_base_position; }
 	void setBasePosition(v3f pos){ m_base_position = pos; }
 	ServerEnvironment* getEnv(){ return m_env; }
 
@@ -154,6 +154,8 @@ public:
 	{}
 	virtual void getAnimation(v2f *frames, float *frame_speed, float *frame_blend, bool *frame_loop)
 	{}
+	virtual void setAnimationSpeed(float frame_speed)
+	{}
 	virtual void setBonePosition(const std::string &bone, v3f position, v3f rotation)
 	{}
 	virtual void getBonePosition(const std::string &bone, v3f *position, v3f *lotation)
@@ -166,8 +168,8 @@ public:
 	{}
 	virtual void removeAttachmentChild(int child_id)
 	{}
-	virtual const UNORDERED_SET<int> &getAttachmentChildIds()
-	{ static const UNORDERED_SET<int> rv; return rv; }
+	virtual const std::unordered_set<int> &getAttachmentChildIds()
+	{ static const std::unordered_set<int> rv; return rv; }
 	virtual ObjectProperties* accessObjectProperties()
 	{ return NULL; }
 	virtual void notifyObjectPropertiesModified()
@@ -203,7 +205,7 @@ public:
 		deleted until this is 0 to keep the id preserved for the right
 		object.
 	*/
-	u16 m_known_by_count;
+	u16 m_known_by_count = 0;
 
 	/*
 		- Whether this object is to be removed when nobody knows about
@@ -214,7 +216,7 @@ public:
 		  to be deleted.
 		- This can be set to true by anything else too.
 	*/
-	bool m_removed;
+	bool m_removed = false;
 
 	/*
 		This is set to true when an object should be removed from the active
@@ -225,17 +227,17 @@ public:
 		m_known_by_count is true, object is deleted from the active object
 		list.
 	*/
-	bool m_pending_deactivation;
+	bool m_pending_deactivation = false;
 
 	/*
 		Whether the object's static data has been stored to a block
 	*/
-	bool m_static_exists;
+	bool m_static_exists = false;
 	/*
 		The block from which the object was loaded from, and in which
 		a copy of the static data resides.
 	*/
-	v3s16 m_static_block;
+	v3s16 m_static_block = v3s16(1337,1337,1337);
 
 	/*
 		Queue of messages to be sent to the client
@@ -251,12 +253,9 @@ protected:
 
 	ServerEnvironment *m_env;
 	v3f m_base_position;
-	UNORDERED_SET<u32> m_attached_particle_spawners;
+	std::unordered_set<u32> m_attached_particle_spawners;
 
 private:
 	// Used for creating objects based on type
 	static std::map<u16, Factory> m_types;
 };
-
-#endif
-

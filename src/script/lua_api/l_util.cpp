@@ -174,7 +174,7 @@ int ModApiUtil::l_get_dig_params(lua_State *L)
 int ModApiUtil::l_get_hit_params(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
-	UNORDERED_MAP<std::string, int> groups;
+	std::unordered_map<std::string, int> groups;
 	read_groups(L, 1, groups);
 	ToolCapabilities tp = read_tool_capabilities(L, 2);
 	if(lua_isnoneornil(L, 3))
@@ -246,7 +246,7 @@ int ModApiUtil::l_get_builtin_path(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
 
-	std::string path = porting::path_share + DIR_DELIM + "builtin";
+	std::string path = porting::path_share + DIR_DELIM + "builtin" + DIR_DELIM;
 	lua_pushstring(L, path.c_str());
 
 	return 1;
@@ -344,9 +344,9 @@ int ModApiUtil::l_get_dir_list(lua_State *L)
 	int index = 0;
 	lua_newtable(L);
 
-	for (size_t i = 0; i < list.size(); i++) {
-		if (list_all || list_dirs == list[i].dir) {
-			lua_pushstring(L, list[i].name.c_str());
+	for (const fs::DirListNode &dln : list) {
+		if (list_all || list_dirs == dln.dir) {
+			lua_pushstring(L, dln.name.c_str());
 			lua_rawseti(L, -2, ++index);
 		}
 	}
@@ -414,7 +414,7 @@ int ModApiUtil::l_get_version(lua_State *L)
 	lua_pushstring(L, g_version_string);
 	lua_setfield(L, table, "string");
 
-	if (strcmp(g_version_string, g_version_hash)) {
+	if (strcmp(g_version_string, g_version_hash) != 0) {
 		lua_pushstring(L, g_version_hash);
 		lua_setfield(L, table, "hash");
 	}
@@ -469,8 +469,6 @@ void ModApiUtil::InitializeClient(lua_State *L, int top)
 	API_FCT(write_json);
 
 	API_FCT(is_yes);
-
-	API_FCT(get_builtin_path);
 
 	API_FCT(compress);
 	API_FCT(decompress);

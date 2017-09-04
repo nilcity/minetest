@@ -18,8 +18,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#ifndef MG_SCHEMATIC_HEADER
-#define MG_SCHEMATIC_HEADER
+#pragma once
 
 #include <map>
 #include "mg_decoration.h"
@@ -117,16 +116,16 @@ public:
 		std::vector<std::pair<s16, u8> > *splist);
 
 	std::vector<content_t> c_nodes;
-	u32 flags;
+	u32 flags = 0;
 	v3s16 size;
-	MapNode *schemdata;
-	u8 *slice_probs;
+	MapNode *schemdata = nullptr;
+	u8 *slice_probs = nullptr;
 };
 
 class SchematicManager : public ObjDefManager {
 public:
 	SchematicManager(Server *server);
-	virtual ~SchematicManager() {}
+	virtual ~SchematicManager() = default;
 
 	virtual void clear();
 
@@ -146,5 +145,3 @@ private:
 
 void generate_nodelist_and_update_ids(MapNode *nodes, size_t nodecount,
 	std::vector<std::string> *usednodes, INodeDefManager *ndef);
-
-#endif

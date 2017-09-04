@@ -19,8 +19,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#ifndef MAPGENV6_HEADER
-#define MAPGENV6_HEADER
+#pragma once
 
 #include "mapgen.h"
 #include "noise.h"
@@ -56,9 +55,10 @@ enum BiomeV6Type
 
 
 struct MapgenV6Params : public MapgenParams {
-	u32 spflags;
-	float freq_desert;
-	float freq_beach;
+	u32 spflags = MGV6_JUNGLES | MGV6_SNOWBIOMES | MGV6_TREES |
+		MGV6_BIOMEBLEND | MGV6_MUDFLOW;
+	float freq_desert = 0.45f;
+	float freq_beach = 0.15f;
 	NoiseParams np_terrain_base;
 	NoiseParams np_terrain_higher;
 	NoiseParams np_steepness;
@@ -72,7 +72,7 @@ struct MapgenV6Params : public MapgenParams {
 	NoiseParams np_apple_trees;
 
 	MapgenV6Params();
-	~MapgenV6Params() {}
+	~MapgenV6Params() = default;
 
 	void readParams(const Settings *settings);
 	void writeParams(Settings *settings) const;
@@ -91,7 +91,6 @@ public:
 	v3s16 full_node_min;
 	v3s16 full_node_max;
 	v3s16 central_area_size;
-	int volume_nodes;
 
 	Noise *noise_terrain_base;
 	Noise *noise_terrain_higher;
@@ -162,9 +161,9 @@ public:
 	int generateGround();
 	void addMud();
 	void flowMud(s16 &mudflow_minpos, s16 &mudflow_maxpos);
+	void moveMud(u32 remove_index, u32 place_index,
+		u32 above_remove_index, v2s16 pos, v3s16 em);
 	void growGrass();
 	void placeTreesAndJungleGrass();
 	virtual void generateCaves(int max_stone_y);
 };
-
-#endif

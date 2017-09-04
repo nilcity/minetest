@@ -73,7 +73,7 @@ void CavesNoiseIntersection::generateCaves(MMVManip *vm,
 	noise_cave1->perlinMap3D(nmin.X, nmin.Y - 1, nmin.Z);
 	noise_cave2->perlinMap3D(nmin.X, nmin.Y - 1, nmin.Z);
 
-	v3s16 em = vm->m_area.getExtent();
+	const v3s16 &em = vm->m_area.getExtent();
 	u32 index2d = 0;  // Biomemap index
 
 	for (s16 z = nmin.Z; z <= nmax.Z; z++)
@@ -104,7 +104,9 @@ void CavesNoiseIntersection::generateCaves(MMVManip *vm,
 					c == biome->c_water) {
 				column_is_open = true;
 				continue;
-			} else if (c == biome->c_river_water) {
+			}
+
+			if (c == biome->c_river_water) {
 				column_is_open = true;
 				is_under_river = true;
 				continue;
@@ -208,7 +210,7 @@ bool CavernsNoise::generateCaverns(MMVManip *vm, v3s16 nmin, v3s16 nmax)
 
 	//// Place nodes
 	bool near_cavern = false;
-	v3s16 em = vm->m_area.getExtent();
+	const v3s16 &em = vm->m_area.getExtent();
 	u32 index2d = 0;
 
 	for (s16 z = nmin.Z; z <= nmax.Z; z++)
@@ -258,7 +260,8 @@ CavesRandomWalk::CavesRandomWalk(
 	s32 seed,
 	int water_level,
 	content_t water_source,
-	content_t lava_source)
+	content_t lava_source,
+	int lava_depth)
 {
 	assert(ndef);
 
@@ -267,7 +270,7 @@ CavesRandomWalk::CavesRandomWalk(
 	this->seed           = seed;
 	this->water_level    = water_level;
 	this->np_caveliquids = &nparams_caveliquids;
-	this->lava_depth     = DEFAULT_LAVA_DEPTH;
+	this->lava_depth     = lava_depth;
 
 	c_water_source = water_source;
 	if (c_water_source == CONTENT_IGNORE)
@@ -514,7 +517,7 @@ void CavesRandomWalk::carveRoute(v3f vec, float f, bool randomize_xz)
 				v3s16 p(cp.X + x0, cp.Y + y0, cp.Z + z0);
 				p += of;
 
-				if (vm->m_area.contains(p) == false)
+				if (!vm->m_area.contains(p))
 					continue;
 
 				u32 i = vm->m_area.index(p);
@@ -818,7 +821,7 @@ void CavesV6::carveRoute(v3f vec, float f, bool randomize_xz,
 				v3s16 p(cp.X + x0, cp.Y + y0, cp.Z + z0);
 				p += of;
 
-				if (vm->m_area.contains(p) == false)
+				if (!vm->m_area.contains(p))
 					continue;
 
 				u32 i = vm->m_area.index(p);
@@ -857,7 +860,8 @@ inline s16 CavesV6::getSurfaceFromHeightmap(v3s16 p)
 			p.X >= node_min.X && p.X <= node_max.X) {
 		u32 index = (p.Z - node_min.Z) * ystride + (p.X - node_min.X);
 		return heightmap[index];
-	} else {
-		return water_level;
 	}
+
+	return water_level;
+
 }

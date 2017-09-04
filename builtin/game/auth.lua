@@ -103,7 +103,25 @@ core.builtin_auth_handler = {
 				core.get_password_hash(name,
 					core.settings:get("default_password")))
 		end
+
+        local user_privileges = core.string_to_privs(auth_user['privileges'])
+		-- Run grant callbacks
+		for priv, _ in pairs(privileges) do
+			if not user_privileges[priv] then
+				core.run_priv_callbacks(name, priv, nil, "grant")
+			end
+		end
+
+		-- Run revoke callbacks
+		for priv, _ in pairs(user_privileges) do
+			if not privileges[priv] then
+				core.run_priv_callbacks(name, priv, nil, "revoke")
+			end
+		end
+
+		
         db.user.update(name, 'privileges', core.privs_to_string(privileges))
+
 		core.notify_authentication_modified(name)
 	end,
 	reload = function()

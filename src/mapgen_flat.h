@@ -18,8 +18,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#ifndef MAPGEN_FLAT_HEADER
-#define MAPGEN_FLAT_HEADER
+#pragma once
 
 #include "mapgen.h"
 
@@ -33,21 +32,22 @@ extern FlagDesc flagdesc_mapgen_flat[];
 
 struct MapgenFlatParams : public MapgenParams
 {
-	u32 spflags;
-	s16 ground_level;
-	s16 large_cave_depth;
-	float cave_width;
-	float lake_threshold;
-	float lake_steepness;
-	float hill_threshold;
-	float hill_steepness;
+	u32 spflags = 0;
+	s16 ground_level = 8;
+	s16 large_cave_depth = -33;
+	s16 lava_depth = -256;
+	float cave_width = 0.09f;
+	float lake_threshold = -0.45f;
+	float lake_steepness = 48.0f;
+	float hill_threshold = 0.45f;
+	float hill_steepness = 64.0f;
 	NoiseParams np_terrain;
 	NoiseParams np_filler_depth;
 	NoiseParams np_cave1;
 	NoiseParams np_cave2;
 
 	MapgenFlatParams();
-	~MapgenFlatParams() {}
+	~MapgenFlatParams() = default;
 
 	void readParams(const Settings *settings);
 	void writeParams(Settings *settings) const;
@@ -74,5 +74,3 @@ private:
 	float hill_steepness;
 	Noise *noise_terrain;
 };
-
-#endif

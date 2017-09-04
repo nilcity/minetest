@@ -17,10 +17,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#ifndef EMERGE_HEADER
-#define EMERGE_HEADER
+#pragma once
 
 #include <map>
+#include <mutex>
 #include "irr_v3d.h"
 #include "util/container.h"
 #include "mapgen.h" // for MapgenParams
@@ -29,10 +29,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #define BLOCK_EMERGE_ALLOW_GEN   (1 << 0)
 #define BLOCK_EMERGE_FORCE_QUEUE (1 << 1)
 
-#define EMERGE_DBG_OUT(x) do {                         \
+#define EMERGE_DBG_OUT(x) {                            \
 	if (enable_mapgen_debug_info)                      \
 		infostream << "EmergeThread: " x << std::endl; \
-} while (0)
+}
 
 class EmergeThread;
 class INodeDefManager;
@@ -46,19 +46,15 @@ class Server;
 
 // Structure containing inputs/outputs for chunk generation
 struct BlockMakeData {
-	MMVManip *vmanip;
-	u64 seed;
+	MMVManip *vmanip = nullptr;
+	u64 seed = 0;
 	v3s16 blockpos_min;
 	v3s16 blockpos_max;
 	v3s16 blockpos_requested;
 	UniqueQueue<v3s16> transforming_liquid;
-	INodeDefManager *nodedef;
+	INodeDefManager *nodedef = nullptr;
 
-	BlockMakeData():
-		vmanip(NULL),
-		seed(0),
-		nodedef(NULL)
-	{}
+	BlockMakeData() = default;
 
 	~BlockMakeData() { delete vmanip; }
 };
@@ -95,7 +91,7 @@ public:
 	bool enable_mapgen_debug_info;
 
 	// Generation Notify
-	u32 gen_notify_on;
+	u32 gen_notify_on = 0;
 	std::set<u32> gen_notify_on_deco_ids;
 
 	// Parameters passed to mapgens owned by ServerMap
@@ -118,6 +114,7 @@ public:
 	// Methods
 	EmergeManager(Server *server);
 	~EmergeManager();
+	DISABLE_CLASS_COPY(EmergeManager);
 
 	bool initMapgens(MapgenParams *mgparams);
 
@@ -143,7 +140,6 @@ public:
 	Mapgen *getCurrentMapgen();
 
 	// Mapgen helpers methods
-	Biome *getBiomeAtPoint(v3s16 p);
 	int getSpawnLevelAtPoint(v2s16 p);
 	int getGroundLevelAtPoint(v2s16 p);
 	bool isBlockUnderground(v3s16 blockpos);
@@ -153,11 +149,11 @@ public:
 private:
 	std::vector<Mapgen *> m_mapgens;
 	std::vector<EmergeThread *> m_threads;
-	bool m_threads_active;
+	bool m_threads_active = false;
 
-	Mutex m_queue_mutex;
+	std::mutex m_queue_mutex;
 	std::map<v3s16, BlockEmergeData> m_blocks_enqueued;
-	UNORDERED_MAP<u16, u16> m_peer_queue_count;
+	std::unordered_map<u16, u16> m_peer_queue_count;
 
 	u16 m_qlimit_total;
 	u16 m_qlimit_diskonly;
@@ -177,8 +173,4 @@ private:
 	bool popBlockEmergeData(v3s16 pos, BlockEmergeData *bedata);
 
 	friend class EmergeThread;
-
-	DISABLE_CLASS_COPY(EmergeManager);
 };
-
-#endif

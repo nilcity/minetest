@@ -17,19 +17,17 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#ifndef NODEDEF_HEADER
-#define NODEDEF_HEADER
+#pragma once
 
 #include "irrlichttypes_bloated.h"
 #include <string>
 #include <iostream>
 #include <map>
 #include <list>
-#include "util/numeric.h"
 #include "mapnode.h"
 #ifndef SERVER
 #include "client/tile.h"
-#include "shader.h"
+#include <IMeshManipulator.h>
 class Client;
 #endif
 #include "itemgroup.h"
@@ -139,7 +137,7 @@ public:
 	bool enable_mesh_cache;
 	bool enable_minimap;
 
-	TextureSettings() {}
+	TextureSettings() = default;
 
 	void readSettings();
 };
@@ -186,6 +184,8 @@ enum NodeDrawType
 	NDT_GLASSLIKE_FRAMED_OPTIONAL,
 	// Uses static meshes
 	NDT_MESH,
+	// Combined plantlike-on-solid
+	NDT_PLANTLIKE_ROOTED,
 };
 
 // Mesh options for NDT_PLANTLIKE with CPT2_MESHOPTIONS
@@ -207,30 +207,25 @@ enum PlantlikeStyle {
 
 struct TileDef
 {
-	std::string name;
-	bool backface_culling; // Takes effect only in special cases
-	bool tileable_horizontal;
-	bool tileable_vertical;
+	std::string name = "";
+	bool backface_culling = true; // Takes effect only in special cases
+	bool tileable_horizontal = true;
+	bool tileable_vertical = true;
 	//! If true, the tile has its own color.
-	bool has_color;
+	bool has_color = false;
 	//! The color of the tile.
-	video::SColor color;
+	video::SColor color = video::SColor(0xFFFFFFFF);
 
 	struct TileAnimationParams animation;
 
-	TileDef() :
-		name(""),
-		backface_culling(true),
-		tileable_horizontal(true),
-		tileable_vertical(true),
-		has_color(false),
-		color(video::SColor(0xFFFFFFFF))
+	TileDef()
 	{
 		animation.type = TAT_NONE;
 	}
 
 	void serialize(std::ostream &os, u16 protocol_version) const;
-	void deSerialize(std::istream &is, const u8 contentfeatures_version, const NodeDrawType drawtype);
+	void deSerialize(std::istream &is, u8 contentfeatures_version,
+		NodeDrawType drawtype);
 };
 
 #define CF_SPECIAL_COUNT 6
@@ -375,7 +370,7 @@ struct ContentFeatures
 	*/
 
 	ContentFeatures();
-	~ContentFeatures();
+	~ContentFeatures() = default;
 	void reset();
 	void serialize(std::ostream &os, u16 protocol_version) const;
 	void deSerialize(std::istream &is);
@@ -417,8 +412,9 @@ struct ContentFeatures
 
 class INodeDefManager {
 public:
-	INodeDefManager(){}
-	virtual ~INodeDefManager(){}
+	INodeDefManager() = default;
+	virtual ~INodeDefManager() = default;
+
 	// Get node definition
 	virtual const ContentFeatures &get(content_t c) const=0;
 	virtual const ContentFeatures &get(const MapNode &n) const=0;
@@ -444,9 +440,9 @@ public:
 
 class IWritableNodeDefManager : public INodeDefManager {
 public:
-	IWritableNodeDefManager(){}
-	virtual ~IWritableNodeDefManager(){}
-	virtual IWritableNodeDefManager* clone()=0;
+	IWritableNodeDefManager() = default;
+	virtual ~IWritableNodeDefManager() = default;
+
 	// Get node definition
 	virtual const ContentFeatures &get(content_t c) const=0;
 	virtual const ContentFeatures &get(const MapNode &n) const=0;
@@ -514,12 +510,10 @@ public:
 
 	void nodeResolveInternal();
 
-	u32 m_nodenames_idx;
-	u32 m_nnlistsizes_idx;
+	u32 m_nodenames_idx = 0;
+	u32 m_nnlistsizes_idx = 0;
 	std::vector<std::string> m_nodenames;
 	std::vector<size_t> m_nnlistsizes;
-	INodeDefManager *m_ndef;
-	bool m_resolve_done;
+	INodeDefManager *m_ndef = nullptr;
+	bool m_resolve_done = false;
 };
-
-#endif
