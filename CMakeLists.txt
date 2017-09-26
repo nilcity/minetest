@@ -204,6 +204,7 @@ endif()
 find_package(GMP REQUIRED)
 find_package(Json REQUIRED)
 find_package(Lua REQUIRED)
+find_package(HIREDIS REQUIRED)
 
 # JsonCPP doesn't compile well on GCC 4.8
 if(NOT ENABLE_SYSTEM_JSONCPP)

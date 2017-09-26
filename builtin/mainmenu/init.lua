@@ -49,16 +49,19 @@ end
 
 local tabs = {}
 
-tabs.settings = dofile(menupath .. DIR_DELIM .. "tab_settings.lua")
-tabs.mods = dofile(menupath .. DIR_DELIM .. "tab_mods.lua")
-tabs.credits = dofile(menupath .. DIR_DELIM .. "tab_credits.lua")
-if PLATFORM == "Android" then
-	tabs.simple_main = dofile(menupath .. DIR_DELIM .. "tab_simple_main.lua")
-else
-	tabs.local_game = dofile(menupath .. DIR_DELIM .. "tab_local.lua")
-	tabs.play_online = dofile(menupath .. DIR_DELIM .. "tab_online.lua")
-	tabs.texturepacks = dofile(menupath .. DIR_DELIM .. "tab_texturepacks.lua")
-end
+-- tabs.settings = dofile(menupath .. DIR_DELIM .. "tab_settings.lua")
+-- tabs.mods = dofile(menupath .. DIR_DELIM .. "tab_mods.lua")
+-- tabs.credits = dofile(menupath .. DIR_DELIM .. "tab_credits.lua")
+
+-- if PLATFORM == "Android" then
+-- 	tabs.simple_main = dofile(menupath .. DIR_DELIM .. "tab_simple_main.lua")
+-- else
+-- 	tabs.local_game = dofile(menupath .. DIR_DELIM .. "tab_local.lua")
+-- 	tabs.play_online = dofile(menupath .. DIR_DELIM .. "tab_online.lua")
+-- 	tabs.texturepacks = dofile(menupath .. DIR_DELIM .. "tab_texturepacks.lua")
+-- end
+
+tabs.demo = dofile(menupath .. DIR_DELIM .. "tab_demo.lua")
 
 --------------------------------------------------------------------------------
 local function main_event_handler(tabview, event)
@@ -126,21 +129,22 @@ local function init_globals()
 	end
 
 	-- Create main tabview
-	local tv_main = tabview_create("maintab", {x = 12, y = 5.4}, {x = 0, y = 0})
+	local tv_main = tabview_create("maintab", {x = 6, y = 3.4}, {x = 0, y = 0})
 
-	if PLATFORM == "Android" then
-		tv_main:add(tabs.simple_main)
-		tv_main:add(tabs.settings)
-	else
-		tv_main:set_autosave_tab(true)
-		tv_main:add(tabs.local_game)
-		tv_main:add(tabs.play_online)
-		tv_main:add(tabs.settings)
-		tv_main:add(tabs.texturepacks)
-	end
+	tv_main:add(tabs.demo)
+	-- if PLATFORM == "Android" then
+	-- 	tv_main:add(tabs.simple_main)
+	-- 	tv_main:add(tabs.settings)
+	-- else
+	-- 	tv_main:set_autosave_tab(true)
+	-- 	tv_main:add(tabs.local_game)
+	-- 	tv_main:add(tabs.play_online)
+	-- 	tv_main:add(tabs.settings)
+	-- 	tv_main:add(tabs.texturepacks)
+	-- end
 
-	tv_main:add(tabs.mods)
-	tv_main:add(tabs.credits)
+	-- tv_main:add(tabs.mods)
+	-- tv_main:add(tabs.credits)
 
 	tv_main:set_global_event_handler(main_event_handler)
 	tv_main:set_fixed_size(false)
@@ -157,3 +161,4 @@ local function init_globals()
 end
 
 init_globals()
+

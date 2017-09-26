@@ -217,17 +217,17 @@ endif(ENABLE_LEVELDB)
 OPTION(ENABLE_REDIS "Enable Redis backend" TRUE)
 set(USE_REDIS FALSE)
 
-if(ENABLE_REDIS)
-	find_library(REDIS_LIBRARY hiredis)
-	find_path(REDIS_INCLUDE_DIR hiredis.h PATH_SUFFIXES hiredis)
-	if(REDIS_LIBRARY AND REDIS_INCLUDE_DIR)
-		set(USE_REDIS TRUE)
-		message(STATUS "Redis backend enabled.")
-		include_directories(${REDIS_INCLUDE_DIR})
-	else(REDIS_LIBRARY AND REDIS_INCLUDE_DIR)
-		message(STATUS "Redis not found!")
-	endif(REDIS_LIBRARY AND REDIS_INCLUDE_DIR)
-endif(ENABLE_REDIS)
+#if(ENABLE_REDIS)
+#	find_library(REDIS_LIBRARY hiredis)
+#	find_path(REDIS_INCLUDE_DIR hiredis.h PATH_SUFFIXES hiredis)
+#	if(REDIS_LIBRARY AND REDIS_INCLUDE_DIR)
+#		set(USE_REDIS TRUE)
+#		message(STATUS "Redis backend enabled.")
+#		include_directories(${REDIS_INCLUDE_DIR})
+#	else(REDIS_LIBRARY AND REDIS_INCLUDE_DIR)
+#		message(STATUS "Redis not found!")
+#	endif(REDIS_LIBRARY AND REDIS_INCLUDE_DIR)
+#endif(ENABLE_REDIS)
 
 
 find_package(SQLite3 REQUIRED)
@@ -557,6 +557,7 @@ include_directories(
 	${SQLITE3_INCLUDE_DIR}
 	${LUA_INCLUDE_DIR}
 	${GMP_INCLUDE_DIR}
+    ${HIREDIS_INCLUDE_DIR}
 	${JSON_INCLUDE_DIR}
 	${X11_INCLUDE_DIR}
 	${PROJECT_SOURCE_DIR}/script
@@ -593,6 +594,7 @@ if(BUILD_CLIENT)
 		${LUA_LIBRARY}
 		${GMP_LIBRARY}
 		${JSON_LIBRARY}
+        ${HIREDIS_LIBRARY}
 		${OPENGLES2_LIBRARIES}
 		${PLATFORM_LIBS}
 		${CLIENT_PLATFORM_LIBS}
@@ -654,6 +656,7 @@ if(BUILD_SERVER)
 		${GETTEXT_LIBRARY}
 		${LUA_LIBRARY}
 		${GMP_LIBRARY}
+        ${HIREDIS_LIBRARY}
 		${PLATFORM_LIBS}
 	)
 	set_target_properties(${PROJECT_NAME}server PROPERTIES

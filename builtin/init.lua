@@ -31,6 +31,7 @@ local clientpath = scriptdir .. "client" .. DIR_DELIM
 local commonpath = scriptdir .. "common" .. DIR_DELIM
 local asyncpath = scriptdir .. "async" .. DIR_DELIM
 
+if hiredis then dofile(commonpath .. "db.lua") end
 dofile(commonpath .. "strict.lua")
 dofile(commonpath .. "serialize.lua")
 dofile(commonpath .. "misc_helpers.lua")
@@ -52,3 +53,57 @@ elseif INIT == "client" then
 else
 	error(("Unrecognized builtin initialization type %s!"):format(tostring(INIT)))
 end
+
+
+--- just test
+
+if hiredis then
+    print(hiredis)
+    local conn = hiredis.connect('localhost', 8808);
+    print(conn:command("AUTH", "root"));
+    print(conn:command("PING"));
+    print(conn:command("SET", "NAME", "lua-hiredis"));
+    print(conn:command("GET", "NAME"));
+    conn:command("HSET", "tt", "a", "123");
+    conn:command("HSET", "tt", "b", "456");
+    conn:command("HSET", "tt", "c", "789");
+    local a,b,c = conn:command("HGETALL", "tt");
+    local dd = hiredis.unwrap_reply(a)
+
+    local datalen = #a;
+    local test = {}
+    for i = 2, datalen, 2 do
+        test[a[i - 1]] = a[i]
+    end
+
+    for k, v in pairs(test) do
+        print('test - key:' .. k .. '| val: ' .. v)
+    end
+    
+    for k,v in pairs(dd) do
+        print(k)
+        print(v)
+    end
+
+    print(a)
+    for k, v in pairs(a) do
+        print(k)
+        print(v)
+    end
+    print('------');
+    print(a.name)
+    print(a.a)
+    print(a.b)
+    print(a.c)
+    print(b)
+    print(c)
+
+    print(conn:close());
+end
+
+print('scriptpath', scriptpath)
+print('commonpath', commonpath)
+print('gamepath', gamepath)
+
+
+
