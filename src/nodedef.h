@@ -107,6 +107,14 @@ struct NodeBox
 	std::vector<aabb3f> connect_left;
 	std::vector<aabb3f> connect_back;
 	std::vector<aabb3f> connect_right;
+	std::vector<aabb3f> disconnected_top;
+	std::vector<aabb3f> disconnected_bottom;
+	std::vector<aabb3f> disconnected_front;
+	std::vector<aabb3f> disconnected_left;
+	std::vector<aabb3f> disconnected_back;
+	std::vector<aabb3f> disconnected_right;
+	std::vector<aabb3f> disconnected;
+	std::vector<aabb3f> disconnected_sides;
 
 	NodeBox()
 	{ reset(); }
@@ -125,9 +133,25 @@ enum LeavesStyle {
 	LEAVES_OPAQUE,
 };
 
+enum AutoScale : u8 {
+	AUTOSCALE_DISABLE,
+	AUTOSCALE_ENABLE,
+	AUTOSCALE_FORCE,
+};
+
+enum WorldAlignMode : u8 {
+	WORLDALIGN_DISABLE,
+	WORLDALIGN_ENABLE,
+	WORLDALIGN_FORCE,
+	WORLDALIGN_FORCE_NODEBOX,
+};
+
 class TextureSettings {
 public:
 	LeavesStyle leaves_style;
+	WorldAlignMode world_aligned_mode;
+	AutoScale autoscale_mode;
+	int node_texture_size;
 	bool opaque_water;
 	bool connected_glass;
 	bool use_normal_texture;
@@ -198,6 +222,12 @@ enum PlantlikeStyle {
 	PLANT_STYLE_HASH2,
 };
 
+enum AlignStyle : u8 {
+	ALIGN_STYLE_NODE,
+	ALIGN_STYLE_WORLD,
+	ALIGN_STYLE_USER_DEFINED,
+};
+
 /*
 	Stand-alone definition of a TileSpec (basically a server-side TileSpec)
 */
@@ -212,6 +242,8 @@ struct TileDef
 	bool has_color = false;
 	//! The color of the tile.
 	video::SColor color = video::SColor(0xFFFFFFFF);
+	AlignStyle align_style = ALIGN_STYLE_NODE;
+	u8 scale = 0;
 
 	struct TileAnimationParams animation;
 
@@ -401,9 +433,6 @@ struct ContentFeatures
 	}
 
 #ifndef SERVER
-	void fillTileAttribs(ITextureSource *tsrc, TileLayer *tile, TileDef *tiledef,
-		u32 shader_id, bool use_normal_texture, bool backface_culling,
-		u8 material_type);
 	void updateTextures(ITextureSource *tsrc, IShaderSource *shdsrc,
 		scene::IMeshManipulator *meshmanip, Client *client, const TextureSettings &tsettings);
 #endif

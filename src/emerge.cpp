@@ -34,10 +34,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "log.h"
 #include "map.h"
 #include "mapblock.h"
-#include "mg_biome.h"
-#include "mg_ore.h"
-#include "mg_decoration.h"
-#include "mg_schematic.h"
+#include "mapgen/mg_biome.h"
+#include "mapgen/mg_ore.h"
+#include "mapgen/mg_decoration.h"
+#include "mapgen/mg_schematic.h"
 #include "nodedef.h"
 #include "profiler.h"
 #include "scripting_server.h"
@@ -247,7 +247,7 @@ bool EmergeManager::isRunning()
 
 
 bool EmergeManager::enqueueBlockEmerge(
-	u16 peer_id,
+	session_t peer_id,
 	v3s16 blockpos,
 	bool allow_generate,
 	bool ignore_queue_limits)
@@ -264,7 +264,7 @@ bool EmergeManager::enqueueBlockEmerge(
 
 bool EmergeManager::enqueueBlockEmergeEx(
 	v3s16 blockpos,
-	u16 peer_id,
+	session_t peer_id,
 	u16 flags,
 	EmergeCompletionCallback callback,
 	void *callback_param)

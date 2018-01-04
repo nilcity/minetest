@@ -32,7 +32,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "quicktune.h"
 #include "httpfetch.h"
 #include "gameparams.h"
-#include "database.h"
+#include "database/database.h"
 #include "config.h"
 #include "player.h"
 #include "porting.h"
@@ -41,14 +41,14 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 	#include "terminal_chat_console.h"
 #endif
 #ifndef SERVER
-#include "guiMainMenu.h"
+#include "gui/guiMainMenu.h"
 #include "client/clientlauncher.h"
-#include "guiEngine.h"
-#include "mainmenumanager.h"
+#include "gui/guiEngine.h"
+#include "gui/mainmenumanager.h"
 #endif
 
 #ifdef HAVE_TOUCHSCREENGUI
-	#include "touchscreengui.h"
+	#include "gui/touchscreengui.h"
 #endif
 
 #if !defined(SERVER) && \
@@ -838,13 +838,13 @@ static bool run_dedicated_server(const GameParams &game_params, const Settings &
 		try {
 			// Create server
 			Server server(game_params.world_path, game_params.game_spec,
-					false, bind_addr.isIPv6(), true, &iface);
+					false, bind_addr, true, &iface);
 
 			g_term_console.setup(&iface, &kill, admin_nick);
 
 			g_term_console.start();
 
-			server.start(bind_addr);
+			server.start();
 			// Run server
 			dedicated_server_loop(server, kill);
 		} catch (const ModError &e) {
@@ -872,8 +872,8 @@ static bool run_dedicated_server(const GameParams &game_params, const Settings &
 		try {
 			// Create server
 			Server server(game_params.world_path, game_params.game_spec, false,
-				bind_addr.isIPv6(), true);
-			server.start(bind_addr);
+				bind_addr, true);
+			server.start();
 
 			// Run server
 			bool &kill = *porting::signal_handler_killstatus();

@@ -58,6 +58,7 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("enable_remote_media_server", "true");
 	settings->setDefault("enable_client_modding", "false");
 	settings->setDefault("max_out_chat_queue_size", "20");
+	settings->setDefault("pause_on_lost_focus", "false");
 
 	// Keymap
 	settings->setDefault("remote_port", "30000");
@@ -139,16 +140,18 @@ void set_default_settings(Settings *settings)
 #endif
 	settings->setDefault("fsaa", "0");
 	settings->setDefault("undersampling", "0");
+	settings->setDefault("world_aligned_mode", "enable");
+	settings->setDefault("autoscale_mode", "disable");
 	settings->setDefault("enable_fog", "true");
 	settings->setDefault("fog_start", "0.4");
 	settings->setDefault("3d_mode", "none");
 	settings->setDefault("3d_paralax_strength", "0.025");
 	settings->setDefault("tooltip_show_delay", "400");
 	settings->setDefault("tooltip_append_itemname", "false");
-	settings->setDefault("zoom_fov", "15");
 	settings->setDefault("fps_max", "60");
 	settings->setDefault("pause_fps_max", "20");
 	settings->setDefault("viewing_range", "100");
+	settings->setDefault("near_plane", "0.1");
 	settings->setDefault("screen_w", "1024");
 	settings->setDefault("screen_h", "600");
 	settings->setDefault("autosave_screensize", "true");
@@ -160,8 +163,11 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("connected_glass", "false");
 	settings->setDefault("smooth_lighting", "true");
 	settings->setDefault("lighting_alpha", "0.0");
-	settings->setDefault("lighting_beta", "0.0");
+	settings->setDefault("lighting_beta", "1.5");
 	settings->setDefault("display_gamma", "1.0");
+	settings->setDefault("lighting_boost", "0.2");
+	settings->setDefault("lighting_boost_center", "0.5");
+	settings->setDefault("lighting_boost_spread", "0.2");
 	settings->setDefault("texture_path", "");
 	settings->setDefault("shader_path", "");
 	settings->setDefault("video_driver", "opengl");
@@ -175,7 +181,7 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("cloud_radius", "12");
 	settings->setDefault("menu_clouds", "true");
 	settings->setDefault("opaque_water", "false");
-	settings->setDefault("console_height", "1.0");
+	settings->setDefault("console_height", "0.6");
 	settings->setDefault("console_color", "(0,0,0)");
 	settings->setDefault("console_alpha", "200");
 	settings->setDefault("formspec_fullscreen_bg_color", "(0,0,0)");
@@ -187,6 +193,7 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("node_highlighting", "box");
 	settings->setDefault("crosshair_color", "(255,255,255)");
 	settings->setDefault("crosshair_alpha", "255");
+	settings->setDefault("recent_chat_messages", "6");
 	settings->setDefault("hud_scaling", "1.0");
 	settings->setDefault("gui_scaling", "1.0");
 	settings->setDefault("gui_scaling_filter", "false");
@@ -323,7 +330,7 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("max_block_send_distance", "9");
 	settings->setDefault("block_send_optimize_distance", "4");
 	settings->setDefault("server_side_occlusion_culling", "true");
-	settings->setDefault("csm_flavour_limits", "3");
+	settings->setDefault("csm_flavour_limits", "18");
 	settings->setDefault("csm_flavour_noderange_limit", "8");
 	settings->setDefault("max_clearobjects_extra_loaded_blocks", "4096");
 	settings->setDefault("time_speed", "72");
@@ -339,10 +346,12 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("dedicated_server_step", "0.09");
 	settings->setDefault("active_block_mgmt_interval", "2.0");
 	settings->setDefault("abm_interval", "1.0");
+	settings->setDefault("active_object_interval", "0.1");
 	settings->setDefault("nodetimer_interval", "0.2");
 	settings->setDefault("ignore_world_load_errors", "false");
 	settings->setDefault("remote_media", "");
 	settings->setDefault("debug_log_level", "action");
+	settings->setDefault("log_color", "detect");
 	settings->setDefault("emergequeue_limit_total", "256");
 	settings->setDefault("emergequeue_limit_diskonly", "32");
 	settings->setDefault("emergequeue_limit_generate", "32");

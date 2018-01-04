@@ -106,7 +106,7 @@ protected:
 
 	/*
 	 * Below: values managed by m_time_lock
-	*/
+	 */
 	// Time of day in milli-hours (0-23999), determines day and night
 	u32 m_time_of_day;
 	// Time of day in 0...1
@@ -122,7 +122,7 @@ protected:
 	std::atomic<u32> m_day_count;
 	/*
 	 * Above: values managed by m_time_lock
-	*/
+	 */
 
 	/* TODO: Add a callback function so these can be updated when a setting
 	 *       changes.  At this point in time it doesn't matter (e.g. /set
@@ -136,6 +136,7 @@ protected:
 	bool m_cache_enable_shaders;
 	float m_cache_active_block_mgmt_interval;
 	float m_cache_abm_interval;
+	float m_cache_ao_interval;
 	float m_cache_nodetimer_interval;
 
 	IGameDef *m_gamedef;

@@ -180,7 +180,13 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 		Backwards compatibility drop
 		Add 'can_zoom' to player object properties
 		Add glow to object properties
+		Change TileDef serialization format.
+		Add world-aligned tiles.
 		Mod channels
+		Raise ObjectProperties version to 3 for removing 'can_zoom' and adding
+			'zoom_fov'.
+		Nodebox version 5
+		Add disconnected nodeboxes
 */
 
 #define LATEST_PROTOCOL_VERSION 36
@@ -205,6 +211,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #define FORMSPEC_VERSION_STRING "formspec_version[" TOSTRING(FORMSPEC_API_VERSION) "]"
 
 #define TEXTURENAME_ALLOWED_CHARS "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_.-"
+
+typedef u16 session_t;
 
 enum ToClientCommand
 {
@@ -915,10 +923,11 @@ enum PlayerListModifer: u8
 
 enum CSMFlavourLimit : u64 {
 	CSM_FL_NONE = 0x00000000,
-	CSM_FL_LOOKUP_NODES = 0x00000001, // Limit node lookups
+	CSM_FL_LOAD_CLIENT_MODS = 0x00000001, // Disable mods provided by clients
 	CSM_FL_CHAT_MESSAGES = 0x00000002, // Disable chat message sending from CSM
 	CSM_FL_READ_ITEMDEFS = 0x00000004, // Disable itemdef lookups
 	CSM_FL_READ_NODEDEFS = 0x00000008, // Disable nodedef lookups
+	CSM_FL_LOOKUP_NODES = 0x00000010, // Limit node lookups
 	CSM_FL_ALL = 0xFFFFFFFF,
 };
 

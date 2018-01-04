@@ -26,6 +26,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "serialization.h" // For ser_ver_supported
 #include "util/serialize.h"
 #include "log.h"
+#include "util/directiontables.h"
 #include "util/numeric.h"
 #include <string>
 #include <sstream>
@@ -152,12 +153,15 @@ bool MapNode::getLightBanks(u8 &lightday, u8 &lightnight, INodeDefManager *nodem
 	return f.param_type == CPT_LIGHT || f.light_source != 0;
 }
 
-u8 MapNode::getFaceDir(INodeDefManager *nodemgr) const
+u8 MapNode::getFaceDir(INodeDefManager *nodemgr, bool allow_wallmounted) const
 {
 	const ContentFeatures &f = nodemgr->get(*this);
 	if (f.param_type_2 == CPT2_FACEDIR ||
 			f.param_type_2 == CPT2_COLORED_FACEDIR)
 		return (getParam2() & 0x1F) % 24;
+	if (allow_wallmounted && (f.param_type_2 == CPT2_WALLMOUNTED ||
+			f.param_type_2 == CPT2_COLORED_WALLMOUNTED))
+		return wallmounted_to_facedir[getParam2() & 0x07];
 	return 0;
 }
 
@@ -246,7 +250,7 @@ void transformNodeBox(const MapNode &n, const NodeBox &nodebox,
 
 	if (nodebox.type == NODEBOX_FIXED || nodebox.type == NODEBOX_LEVELED) {
 		const std::vector<aabb3f> &fixed = nodebox.fixed;
-		int facedir = n.getFaceDir(nodemgr);
+		int facedir = n.getFaceDir(nodemgr, true);
 		u8 axisdir = facedir>>2;
 		facedir&=0x03;
 		for (aabb3f box : fixed) {
@@ -418,16 +422,40 @@ void transformNodeBox(const MapNode &n, const NodeBox &nodebox,
 		boxes_size += nodebox.fixed.size();
 		if (neighbors & 1)
 			boxes_size += nodebox.connect_top.size();
+		else
+			boxes_size += nodebox.disconnected_top.size();
+
 		if (neighbors & 2)
 			boxes_size += nodebox.connect_bottom.size();
+		else
+			boxes_size += nodebox.disconnected_bottom.size();
+
 		if (neighbors & 4)
 			boxes_size += nodebox.connect_front.size();
+		else
+			boxes_size += nodebox.disconnected_front.size();
+
 		if (neighbors & 8)
 			boxes_size += nodebox.connect_left.size();
+		else
+			boxes_size += nodebox.disconnected_left.size();
+
 		if (neighbors & 16)
 			boxes_size += nodebox.connect_back.size();
+		else
+			boxes_size += nodebox.disconnected_back.size();
+
 		if (neighbors & 32)
 			boxes_size += nodebox.connect_right.size();
+		else
+			boxes_size += nodebox.disconnected_right.size();
+
+		if (neighbors == 0)
+			boxes_size += nodebox.disconnected.size();
+
+		if (neighbors < 4)
+			boxes_size += nodebox.disconnected_sides.size();
+
 		boxes.reserve(boxes_size);
 
 #define BOXESPUSHBACK(c) \
@@ -438,18 +466,50 @@ void transformNodeBox(const MapNode &n, const NodeBox &nodebox,
 
 		BOXESPUSHBACK(nodebox.fixed);
 
-		if (neighbors & 1)
+		if (neighbors & 1) {
 			BOXESPUSHBACK(nodebox.connect_top);
-		if (neighbors & 2)
+		} else {
+			BOXESPUSHBACK(nodebox.disconnected_top);
+		}
+
+		if (neighbors & 2) {
 			BOXESPUSHBACK(nodebox.connect_bottom);
-		if (neighbors & 4)
+		} else {
+			BOXESPUSHBACK(nodebox.disconnected_bottom);
+		}
+
+		if (neighbors & 4) {
 			BOXESPUSHBACK(nodebox.connect_front);
-		if (neighbors & 8)
+		} else {
+			BOXESPUSHBACK(nodebox.disconnected_front);
+		}
+
+		if (neighbors & 8) {
 			BOXESPUSHBACK(nodebox.connect_left);
-		if (neighbors & 16)
+		} else {
+			BOXESPUSHBACK(nodebox.disconnected_left);
+		}
+
+		if (neighbors & 16) {
 			BOXESPUSHBACK(nodebox.connect_back);
-		if (neighbors & 32)
+		} else {
+			BOXESPUSHBACK(nodebox.disconnected_back);
+		}
+
+		if (neighbors & 32) {
 			BOXESPUSHBACK(nodebox.connect_right);
+		} else {
+			BOXESPUSHBACK(nodebox.disconnected_right);
+		}
+
+		if (neighbors == 0) {
+			BOXESPUSHBACK(nodebox.disconnected);
+		}
+
+		if (neighbors < 4) {
+			BOXESPUSHBACK(nodebox.disconnected_sides);
+		}
+
 	}
 	else // NODEBOX_REGULAR
 	{

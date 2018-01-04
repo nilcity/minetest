@@ -18,11 +18,14 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 */
 
 #include "chat.h"
-#include "debug.h"
-#include "config.h"
-#include "util/strfnd.h"
+
+#include <algorithm>
 #include <cctype>
 #include <sstream>
+
+#include "config.h"
+#include "debug.h"
+#include "util/strfnd.h"
 #include "util/string.h"
 #include "util/numeric.h"
 
@@ -369,6 +372,12 @@ s32 ChatBuffer::getBottomScrollPos() const
 	return formatted_count - rows;
 }
 
+void ChatBuffer::resize(u32 scrollback)
+{
+	m_scrollback = scrollback;
+	if (m_unformatted.size() > m_scrollback)
+		deleteOldest(m_unformatted.size() - m_scrollback);
+}
 
 
 ChatPrompt::ChatPrompt(const std::wstring &prompt, u32 history_limit):
@@ -397,8 +406,14 @@ void ChatPrompt::input(const std::wstring &str)
 
 void ChatPrompt::addToHistory(std::wstring line)
 {
-	if (!line.empty())
+	if (!line.empty() &&
+			(m_history.size() == 0 || m_history.back() != line)) {
+		// Remove all duplicates
+		m_history.erase(std::remove(m_history.begin(), m_history.end(),
+			line), m_history.end());
+		// Push unique line
 		m_history.push_back(line);
+	}
 	if (m_history.size() > m_history_limit)
 		m_history.erase(m_history.begin());
 	m_history_index = m_history.size();
@@ -729,6 +744,14 @@ void ChatBackend::reformat(u32 cols, u32 rows)
 void ChatBackend::clearRecentChat()
 {
 	m_recent_buffer.clear();
+}
+
+
+void ChatBackend::applySettings()
+{
+	u32 recent_lines = g_settings->getU32("recent_chat_messages");
+	recent_lines = rangelim(recent_lines, 2, 20);
+	m_recent_buffer.resize(recent_lines);
 }
 
 void ChatBackend::step(float dtime)

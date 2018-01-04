@@ -154,8 +154,9 @@ private:
 class ActiveBlockList
 {
 public:
-	void update(std::vector<v3s16> &active_positions,
-		s16 radius,
+	void update(std::vector<PlayerSAO*> &active_players,
+		s16 active_block_range,
+		s16 active_object_range,
 		std::set<v3s16> &blocks_removed,
 		std::set<v3s16> &blocks_added);
 
@@ -168,6 +169,7 @@ public:
 	}
 
 	std::set<v3s16> m_list;
+	std::set<v3s16> m_abm_list;
 	std::set<v3s16> m_forceloaded_list;
 
 private:
@@ -219,7 +221,7 @@ public:
 	// Save players
 	void saveLoadedPlayers();
 	void savePlayer(RemotePlayer *player);
-	PlayerSAO *loadPlayer(RemotePlayer *player, bool *new_player, u16 peer_id,
+	PlayerSAO *loadPlayer(RemotePlayer *player, bool *new_player, session_t peer_id,
 		bool is_singleplayer);
 	void addPlayer(RemotePlayer *player);
 	void removePlayer(RemotePlayer *player);
@@ -326,8 +328,15 @@ public:
 	// This makes stuff happen
 	void step(f32 dtime);
 
-	//check if there's a line of sight between two positions
-	bool line_of_sight(v3f pos1, v3f pos2, float stepsize=1.0, v3s16 *p=NULL);
+	/*!
+	 * Returns false if the given line intersects with a
+	 * non-air node, true otherwise.
+	 * \param pos1 start of the line
+	 * \param pos2 end of the line
+	 * \param p output, position of the first non-air node
+	 * the line intersects
+	 */
+	bool line_of_sight(v3f pos1, v3f pos2, v3s16 *p = NULL);
 
 	u32 getGameTime() const { return m_game_time; }
 
@@ -341,7 +350,7 @@ public:
 	void setStaticForActiveObjectsInBlock(v3s16 blockpos,
 		bool static_exists, v3s16 static_block=v3s16(0,0,0));
 
-	RemotePlayer *getPlayer(const u16 peer_id);
+	RemotePlayer *getPlayer(const session_t peer_id);
 	RemotePlayer *getPlayer(const char* name);
 	u32 getPlayerCount() const { return m_players.size(); }
 
@@ -420,8 +429,11 @@ private:
 	ActiveBlockList m_active_blocks;
 	IntervalLimiter m_active_blocks_management_interval;
 	IntervalLimiter m_active_block_modifier_interval;
+	IntervalLimiter m_active_object_interval;
 	IntervalLimiter m_active_blocks_nodemetadata_interval;
-	int m_active_block_interval_overload_skip = 0;
+	float m_active_block_interval_overload_skip = 1.0f;
+	float m_active_object_interval_overload_skip = 1.0f;
+	float m_avg_ao_time = 0.0f;
 	// Time from the beginning of the game in seconds.
 	// Incremented in step().
 	u32 m_game_time = 0;
